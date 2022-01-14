@@ -32,7 +32,7 @@ public class Main {
         try {
             menu:
             while (true) {
-                System.out.println("Wordle Main Menu\n[1] Play\n[2] Quit");
+                System.out.println("Wordle Main Menu\n[1] Play\n[~] Quit");
                 String menuInput = in.readLine();
                 if (menuInput.equalsIgnoreCase("1")) {
                     printBreaker();
@@ -40,21 +40,27 @@ public class Main {
                     while (true) {
                         ArrayList<String> applicable = new ArrayList<>();
                         for (String word : words) {
-                            if (word.length() == 5) {
+                            if (word.length() == 5 && !duplicates(word.toCharArray())) {
                                 applicable.add(word);
                             }
                         }
                         int t = 1;
+                        int totalTries = 6;
                         String word = applicable.get(new Random().nextInt(applicable.size()));
-                        System.out.println("Start guessing!");
+                        System.out.println("Start guessing. You have " + totalTries + " tries\n[~] Exit / Forfeit");
                         guess:
                         while (true) {
-                            printBreaker();
-                            if (t <= 6) {
-                                String guess = null;
+                            if (t <= totalTries) {
+                                printTry(t);
+                                String guess;
                                 input:
                                 while (true) {
                                     guess = in.readLine();
+                                    if (guess.equalsIgnoreCase("~")) {
+                                        t = totalTries;
+                                        guess = "     ";
+                                        break input;
+                                    }
                                     if (guess.length() == word.length() && guess.matches("[a-zA-Z]+") && words.contains(guess)) {
                                         break input;
                                     } else {
@@ -93,6 +99,7 @@ public class Main {
                                 }
                                 t++;
                             } else {
+                                printBreaker();
                                 printlnColor("YOU LOSE!", Color.ANSI_RED);
                                 System.out.println("The word was: " + word);
                                 printBreaker();
@@ -100,9 +107,10 @@ public class Main {
                             }
                         }
                     }
-                } else if (menuInput.equalsIgnoreCase("2")) {
+                } else if (menuInput.equalsIgnoreCase("~")) {
                     printBreaker();
                     System.out.println("Thank you for playing!");
+                    printBreaker();
                     break menu;
                 } else {
                     invalid();
@@ -118,11 +126,25 @@ public class Main {
         System.out.println(breaker);
     }
 
+    public static void printTry(int t) {
+        String s = "Try " + t;
+        System.out.println(breaker.substring(0, breaker.length() - s.length()) + s);
+    }
+
     public static void invalid() {
         System.out.println(Color.ANSI_RED + "Invalid Input" + Color.ANSI_RESET);
     }
 
     public static void printlnColor(String s, String color) {
         System.out.println(color + s + Color.ANSI_RESET);
+    }
+
+    public static boolean duplicates(final char[] array) {
+        Set<Character> lump = new HashSet<Character>();
+        for (char i : array) {
+            if (lump.contains(i)) return true;
+            lump.add(i);
+        }
+        return false;
     }
 }
