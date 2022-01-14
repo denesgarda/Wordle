@@ -10,24 +10,30 @@ import java.util.*;
 public class Main {
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-    public static String breaker = "------------------------------";
+    public static String breaker = "----------------------------------------";
 
     public static void main(String[] args) {
         System.out.println("Loading words...");
+        int wordAmount = 0;
         ArrayList<String> words = new ArrayList<>();
         try {
-            URLConnection connection = new URL("http://www-personal.umich.edu/~jlawler/wordlist").openConnection();
+            URLConnection connection = new URL("https://raw.githubusercontent.com/first20hours/google-10000-english/master/20k.txt").openConnection();
+            //URLConnection connection = new URL("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").openConnection();
             Scanner scanner = new Scanner(connection.getInputStream());
             scanner.useDelimiter("\\Z");
             while (scanner.hasNext()) {
-                words.add(scanner.nextLine());
+                String word = scanner.nextLine();
+                if (word.matches("[a-zA-Z]+")) {
+                    words.add(word.toLowerCase());
+                    wordAmount++;
+                }
             }
             scanner.close();
         } catch (IOException e) {
             System.out.println("Failed to access library...");
             System.exit(0);
         }
-        System.out.println("Words successfully loaded");
+        System.out.println(wordAmount + " words successfully loaded");
         printBreaker();
         try {
             menu:
@@ -94,6 +100,7 @@ public class Main {
                                 if (guess.equalsIgnoreCase(word)) {
                                     printBreaker();
                                     printlnColor("YOU WIN!", Color.ANSI_CYAN);
+                                    printlnColor("Definition: " + getDefinition(word), Color.ANSI_WHITE);
                                     printBreaker();
                                     break game;
                                 }
@@ -102,6 +109,7 @@ public class Main {
                                 printBreaker();
                                 printlnColor("YOU LOSE!", Color.ANSI_RED);
                                 System.out.println("The word was: " + word);
+                                printlnColor("Definition: " + getDefinition(word), Color.ANSI_WHITE);
                                 printBreaker();
                                 break game;
                             }
@@ -146,5 +154,17 @@ public class Main {
             lump.add(i);
         }
         return false;
+    }
+
+    public static String getDefinition(String word) {
+        try {
+            URLConnection connection = new URL("https://api.dictionaryapi.dev/api/v2/entries/en/" + word).openConnection();
+            Scanner scanner = new Scanner(connection.getInputStream());
+            scanner.useDelimiter("\\Z");
+            String line = scanner.nextLine();
+            return line.substring(line.indexOf("\"definition\"") + 14, line.indexOf("\",\"example\""));
+        } catch (Exception e) {
+            return "Could not get definition";
+        }
     }
 }
