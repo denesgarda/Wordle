@@ -1,5 +1,9 @@
 package com.denesgarda.Wordle;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -100,7 +104,7 @@ public class Main {
                                 if (guess.equalsIgnoreCase(word)) {
                                     printBreaker();
                                     printlnColor("YOU WIN!", Color.ANSI_CYAN);
-                                    printlnColor("Definition: " + getDefinition(word), Color.ANSI_WHITE);
+                                    printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
                                     printBreaker();
                                     break game;
                                 }
@@ -109,7 +113,7 @@ public class Main {
                                 printBreaker();
                                 printlnColor("YOU LOSE!", Color.ANSI_RED);
                                 System.out.println("The word was: " + word);
-                                printlnColor("Definition: " + getDefinition(word), Color.ANSI_WHITE);
+                                printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
                                 printBreaker();
                                 break game;
                             }
@@ -162,7 +166,10 @@ public class Main {
             Scanner scanner = new Scanner(connection.getInputStream());
             scanner.useDelimiter("\\Z");
             String line = scanner.nextLine();
-            return line.substring(line.indexOf("\"definition\"") + 14, line.indexOf("\",\"example\""));
+            JSONArray all = (JSONArray) new JSONParser().parse(line);
+            JSONArray meanings = (JSONArray) ((JSONObject) all.get(0)).get("meanings");
+            JSONArray definitions = (JSONArray) ((JSONObject) meanings.get(0)).get("definitions");
+            return (String) ((JSONObject) definitions.get(0)).get("definition");
         } catch (Exception e) {
             return "Could not get definition";
         }

@@ -1,0 +1,84 @@
+[
+  {
+    "phonetic": "ˈrɒki",
+    "phonetics": [
+      {
+        "text": "ˈrɒki",
+        "audio": "\/\/ssl.gstatic.com\/dictionary\/static\/sounds\/20200429\/rocky--_gb_2.mp3"
+      }
+    ],
+    "word": "rocky",
+    "meanings": [
+      {
+        "partOfSpeech": "adjective",
+        "definitions": [
+          {
+            "synonyms": [
+              "stony",
+              "rock-strewn",
+              "pebbly",
+              "shingly",
+              "rough",
+              "bumpy",
+              "rugged",
+              "hard",
+              "craggy",
+              "mountainous"
+            ],
+            "antonyms": [
+              "smooth",
+              "flat"
+            ],
+            "definition": "consisting or full of rock or rocks.",
+            "example": "a rocky crag above the village"
+          },
+          {
+            "synonyms": [
+              "unsteady",
+              "shaky",
+              "unstable",
+              "wobbly",
+              "tottery",
+              "rickety",
+              "flimsy",
+              "bockety"
+            ],
+            "antonyms": [
+              "steady"
+            ],
+            "definition": "tending to rock or shake; unsteady.",
+            "example": "older types of sash windows are a bit rocky"
+          },
+          {
+            "synonyms": [
+              "difficult",
+              "up and down",
+              "problematic",
+              "precarious",
+              "unsteady",
+              "unstable",
+              "uncertain",
+              "unsure",
+              "unreliable",
+              "undependable",
+              "built on sand",
+              "iffy"
+            ],
+            "antonyms": [
+              "solid",
+              "stable"
+            ],
+            "definition": "difficult and full of problems.",
+            "example": "the marriage seemingly got off to a rocky start"
+          },
+          {
+            "synonyms": [],
+            "antonyms": [],
+            "definition": "relating to or characteristic of rock music.",
+            "example": "rocky and acoustic folk bands"
+          }
+        ]
+      }
+    ]
+  }
+]
