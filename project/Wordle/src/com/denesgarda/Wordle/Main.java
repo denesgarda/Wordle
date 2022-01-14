@@ -163,6 +163,7 @@ public class Main {
     public static String getDefinition(String word) {
         try {
             URLConnection connection = new URL("https://api.dictionaryapi.dev/api/v2/entries/en/" + word).openConnection();
+            connection.setConnectTimeout(5000);
             Scanner scanner = new Scanner(connection.getInputStream());
             scanner.useDelimiter("\\Z");
             String line = scanner.nextLine();
