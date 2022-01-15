@@ -10,15 +10,56 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 
 public class Main {
+    public static double VERSION = 1.0;
+
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
     public static String breaker = "----------------------------------------";
 
     public static void main(String[] args) {
+        System.out.println("Checking for update...");
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/DenDen747/Wordle/main/nv.txt").openConnection();
+            connection.setConnectTimeout(5000);
+            Scanner scanner = new Scanner(connection.getInputStream());
+            scanner.useDelimiter("\\Z");
+            String line = scanner.nextLine();
+            double version = Double.parseDouble(line.split(",")[0]);
+            boolean mandatory = Boolean.parseBoolean(line.split(",")[1]);
+            String link = line.split(",")[2];
+            if (VERSION < version) {
+                if (mandatory) {
+                    System.out.println("You are using an outdated version! This is a mandatory update.\n\n[ENTER] Download new version\n[~] Exit");
+                    String choice = in.readLine();
+                    if (!choice.equalsIgnoreCase("~")) {
+                        try {
+                            Desktop.getDesktop().browse(new URI(link));
+                            System.exit(0);
+                        } catch (Exception e) {
+                            System.out.println("Failed to open link in default browser. Please go to the following link:\n" + link);
+                        }
+                    } else {
+                        System.exit(0);
+                    }
+                } else {
+                    System.out.println("You are using an outdated version!\n\n[ENTER] Download new version\n[~] Continue anyway (not recommended)");
+                    String choice = in.readLine();
+                    if (!choice.equalsIgnoreCase("~")) {
+                        try {
+                            Desktop.getDesktop().browse(new URI(link));
+                            System.exit(0);
+                        } catch (Exception e) {
+                            System.out.println("Failed to open link in default browser. Please go to the following link:\n" + link);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect, ignoring...");
+        }
         System.out.println("Loading words...");
         int wordAmount = 0;
         ArrayList<String> words = new ArrayList<>();
