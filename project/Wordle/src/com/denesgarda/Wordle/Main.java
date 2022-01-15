@@ -5,9 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -25,8 +23,8 @@ public class Main {
         ArrayList<String> words = new ArrayList<>();
         ArrayList<String> bank = new ArrayList<>();
         try {
-            URLConnection connection = new URL("https://raw.githubusercontent.com/first20hours/google-10000-english/master/20k.txt").openConnection();
-            Scanner scanner = new Scanner(connection.getInputStream());
+            //https://raw.githubusercontent.com/first20hours/google-10000-english/master/20k.txt
+            Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/common.txt"));
             scanner.useDelimiter("\\Z");
             while (scanner.hasNext()) {
                 String word = scanner.nextLine();
@@ -37,9 +35,8 @@ public class Main {
                 }
             }
             scanner.close();
-
-            URLConnection connection2 = new URL("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").openConnection();
-            Scanner scanner2 = new Scanner(connection2.getInputStream());
+            //https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
+            Scanner scanner2 = new Scanner(Main.class.getResourceAsStream("/data/all.txt"));
             scanner2.useDelimiter("\\Z");
             while (scanner2.hasNext()) {
                 String word = scanner2.nextLine();
@@ -49,8 +46,8 @@ public class Main {
                 }
             }
             scanner.close();
-        } catch (IOException e) {
-            System.out.println("Failed to access library...");
+        } catch (Exception e) {
+            System.out.println("Failed to load words");
             System.exit(0);
         }
         System.out.println(wordAmount + " words successfully loaded");
@@ -62,80 +59,147 @@ public class Main {
                 String menuInput = in.readLine();
                 if (menuInput.equalsIgnoreCase("1")) {
                     printBreaker();
-                    game:
+                    config:
                     while (true) {
-                        ArrayList<String> applicable = new ArrayList<>();
-                        for (String word : words) {
-                            if (word.length() == 5 && !duplicates(word.toCharArray())) {
-                                applicable.add(word);
+                        System.out.println("Config:\n    Word length: " + Config.wordLength + "\n    Repeat letters: " + Config.repeatLetters + "\n[ENTER] Start\n[E] Edit");
+                        String configInput = in.readLine();
+                        if (configInput.equalsIgnoreCase("E")) {
+                            property:
+                            while (true) {
+                                printBreaker();
+                                System.out.println("Select a property to edit\n[1] Word length\n[2] Repeat letters\n[R] Reset all properties\n[ENTER] Cancel");
+                                String propertyInput = in.readLine();
+                                if (propertyInput.equalsIgnoreCase("1")) {
+                                    printBreaker();
+                                    value:
+                                    while (true) {
+                                        System.out.print("Enter new value (3 - 10)\n" + Config.wordLength + " -> ");
+                                        String valueInput = in.readLine();
+                                        try {
+                                            int value = Integer.parseInt(valueInput);
+                                            if (value >= 3 && value <= 10) {
+                                                Config.wordLength = value;
+                                                printBreaker();
+                                                break property;
+                                            } else {
+                                                printlnColor("Invalid input", Color.ANSI_RED);
+                                            }
+                                        } catch (Exception e) {
+                                            printlnColor("Invalid input", Color.ANSI_RED);
+                                        }
+                                    }
+                                } else if (propertyInput.equalsIgnoreCase("2")) {
+                                    printBreaker();
+                                    value:
+                                    while (true) {
+                                        System.out.print("Enter new value (true / false)\n" + Config.repeatLetters + " -> ");
+                                        String valueInput = in.readLine();
+                                        if (valueInput.equalsIgnoreCase("true") || valueInput.equalsIgnoreCase("false")) {
+                                            Config.repeatLetters = Boolean.parseBoolean(valueInput);
+                                            printBreaker();
+                                            break property;
+                                        } else {
+                                            printlnColor("Invalid input", Color.ANSI_RED);
+                                        }
+                                    }
+                                } else if (propertyInput.equalsIgnoreCase("R")) {
+                                    printBreaker();
+                                    Config.reset();
+                                    System.out.println("Reset all properties");
+                                    printBreaker();
+                                    break property;
+                                } else {
+                                    printBreaker();
+                                    break property;
+                                }
                             }
-                        }
-                        int t = 1;
-                        int totalTries = 6;
-                        String word = applicable.get(new Random().nextInt(applicable.size()));
-                        System.out.println("Start guessing. You have " + totalTries + " tries\n[~] Exit / Forfeit");
-                        guess:
-                        while (true) {
-                            if (t <= totalTries) {
-                                printTry(t);
-                                String guess;
-                                input:
-                                while (true) {
-                                    guess = in.readLine();
-                                    guess = guess.toLowerCase();
-                                    if (guess.equalsIgnoreCase("~")) {
-                                        t = totalTries;
-                                        guess = "     ";
-                                        break input;
-                                    }
-                                    if (guess.length() > word.length()) {
-                                        printlnColor("Too long", Color.ANSI_RED);
-                                    } else if (guess.length() < word.length()) {
-                                        printlnColor("Too short", Color.ANSI_RED);
-                                    } else if (!(guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess)))) {
-                                        printlnColor("Not in word bank", Color.ANSI_RED);
+                        } else {
+                            printBreaker();
+                            game:
+                            while (true) {
+                                ArrayList<String> applicable = new ArrayList<>();
+                                for (String word : words) {
+                                    if (Config.repeatLetters) {
+                                        if (word.length() == Config.wordLength) {
+                                            applicable.add(word);
+                                        }
                                     } else {
-                                        break input;
+                                        if (word.length() == Config.wordLength && !duplicates(word.toCharArray())) {
+                                            applicable.add(word);
+                                        }
                                     }
                                 }
-                                String[] colors = new String[word.length()];
-                                for (int i = 0; i < word.length(); i++) {
-                                    if (word.contains(String.valueOf(guess.toCharArray()[i]))) {
-                                        colors[i] = Color.ANSI_YELLOW;
+                                int t = 1;
+                                int totalTries = Config.getTries();
+                                String word = applicable.get(new Random().nextInt(applicable.size()));
+                                System.out.println("Guess the " + Config.wordLength + " letter word. You have " + totalTries + " tries\n[~] Exit / Forfeit");
+                                guess:
+                                while (true) {
+                                    if (t <= totalTries) {
+                                        printTry(t);
+                                        String guess;
+                                        input:
+                                        while (true) {
+                                            guess = in.readLine();
+                                            guess = guess.toLowerCase();
+                                            if (guess.equalsIgnoreCase("~")) {
+                                                t = totalTries;
+                                                guess = "";
+                                                for (int i = 0; i < Config.wordLength; i++) {
+                                                    guess += " ";
+                                                }
+                                                break input;
+                                            }
+                                            if (guess.length() > word.length()) {
+                                                printlnColor("Too long", Color.ANSI_RED);
+                                            } else if (guess.length() < word.length()) {
+                                                printlnColor("Too short", Color.ANSI_RED);
+                                            } else if (!(guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess)))) {
+                                                printlnColor("Not in word bank", Color.ANSI_RED);
+                                            } else {
+                                                break input;
+                                            }
+                                        }
+                                        String[] colors = new String[word.length()];
+                                        for (int i = 0; i < word.length(); i++) {
+                                            if (word.contains(String.valueOf(guess.toCharArray()[i]))) {
+                                                colors[i] = Color.ANSI_YELLOW;
+                                            }
+                                        }
+                                        for (int i = 0; i < word.length(); i++) {
+                                            if (word.toCharArray()[i] == guess.toCharArray()[i]) {
+                                                colors[i] = Color.ANSI_GREEN;
+                                            }
+                                        }
+                                        for (int i = 0; i < colors.length; i++) {
+                                            if (colors[i] == null) {
+                                                colors[i] = Color.ANSI_RESET;
+                                            }
+                                        }
+                                        String output = "";
+                                        for (int i = 0; i < colors.length; i++) {
+                                            output += colors[i];
+                                            output += guess.toCharArray()[i];
+                                        }
+                                        output += Color.ANSI_RESET;
+                                        System.out.println(output);
+                                        if (guess.equalsIgnoreCase(word)) {
+                                            printBreaker();
+                                            printlnColor("YOU WIN!", Color.ANSI_CYAN);
+                                            printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
+                                            printBreaker();
+                                            break config;
+                                        }
+                                        t++;
+                                    } else {
+                                        printBreaker();
+                                        printlnColor("YOU LOSE!", Color.ANSI_RED);
+                                        System.out.println("The word was: " + word);
+                                        printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
+                                        printBreaker();
+                                        break config;
                                     }
                                 }
-                                for (int i = 0; i < word.length(); i++) {
-                                    if (word.toCharArray()[i] == guess.toCharArray()[i]) {
-                                        colors[i] = Color.ANSI_GREEN;
-                                    }
-                                }
-                                for (int i = 0; i < colors.length; i++) {
-                                    if (colors[i] == null) {
-                                        colors[i] = Color.ANSI_RESET;
-                                    }
-                                }
-                                String output = "";
-                                for (int i = 0; i < colors.length; i++) {
-                                    output += colors[i];
-                                    output += guess.toCharArray()[i];
-                                }
-                                output += Color.ANSI_RESET;
-                                System.out.println(output);
-                                if (guess.equalsIgnoreCase(word)) {
-                                    printBreaker();
-                                    printlnColor("YOU WIN!", Color.ANSI_CYAN);
-                                    printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
-                                    printBreaker();
-                                    break game;
-                                }
-                                t++;
-                            } else {
-                                printBreaker();
-                                printlnColor("YOU LOSE!", Color.ANSI_RED);
-                                System.out.println("The word was: " + word);
-                                printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
-                                printBreaker();
-                                break game;
                             }
                         }
                     }
