@@ -4,9 +4,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -20,15 +22,28 @@ public class Main {
         System.out.println("Loading words...");
         int wordAmount = 0;
         ArrayList<String> words = new ArrayList<>();
+        ArrayList<String> bank = new ArrayList<>();
         try {
             URLConnection connection = new URL("https://raw.githubusercontent.com/first20hours/google-10000-english/master/20k.txt").openConnection();
-            //URLConnection connection = new URL("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").openConnection();
             Scanner scanner = new Scanner(connection.getInputStream());
             scanner.useDelimiter("\\Z");
             while (scanner.hasNext()) {
                 String word = scanner.nextLine();
                 if (word.matches("[a-zA-Z]+")) {
                     words.add(word.toLowerCase());
+                    bank.add(word.toLowerCase());
+                    wordAmount++;
+                }
+            }
+            scanner.close();
+
+            URLConnection connection2 = new URL("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").openConnection();
+            Scanner scanner2 = new Scanner(connection2.getInputStream());
+            scanner2.useDelimiter("\\Z");
+            while (scanner2.hasNext()) {
+                String word = scanner2.nextLine();
+                if (word.matches("[a-zA-Z]+")) {
+                    bank.add(word.toLowerCase());
                     wordAmount++;
                 }
             }
@@ -42,7 +57,7 @@ public class Main {
         try {
             menu:
             while (true) {
-                System.out.println("Wordle Main Menu\n[1] Play\n[~] Quit");
+                System.out.println("Wordle Main Menu\n[1] Play\n[2] How to play\n[3] Github\n[~] Quit");
                 String menuInput = in.readLine();
                 if (menuInput.equalsIgnoreCase("1")) {
                     printBreaker();
@@ -66,18 +81,18 @@ public class Main {
                                 input:
                                 while (true) {
                                     guess = in.readLine();
+                                    guess = guess.toLowerCase();
                                     if (guess.equalsIgnoreCase("~")) {
                                         t = totalTries;
                                         guess = "     ";
                                         break input;
                                     }
-                                    if (guess.length() == word.length() && guess.matches("[a-zA-Z]+") && words.contains(guess)) {
+                                    if (guess.length() == word.length() && guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess))) {
                                         break input;
                                     } else {
                                         invalid();
                                     }
                                 }
-                                guess = guess.toLowerCase();
                                 String[] colors = new String[word.length()];
                                 for (int i = 0; i < word.length(); i++) {
                                     if (word.contains(String.valueOf(guess.toCharArray()[i]))) {
@@ -119,6 +134,19 @@ public class Main {
                             }
                         }
                     }
+                } else if (menuInput.equalsIgnoreCase("2")) {
+                    printBreaker();
+                    System.out.println("How to play Wordle\nYou have to try guessing a five-letter word using other five-letter words. You have six tries.");
+                    printlnColor("Yellow means the letter is in the word but not in the right spot.", Color.ANSI_YELLOW);
+                    printlnColor("Green means the letter is in the word and in the right place.", Color.ANSI_GREEN);
+                    System.out.println("Press [ENTER] to continue");
+                    in.readLine();
+                    printBreaker();
+                } else if (menuInput.equalsIgnoreCase("3")) {
+                    printBreaker();
+                    Desktop.getDesktop().browse(new URI("https://www.github.com/DenDen747/Wordle/"));
+                    System.out.println("Opened Github page in default browser");
+                    printBreaker();
                 } else if (menuInput.equalsIgnoreCase("~")) {
                     printBreaker();
                     System.out.println("Thank you for playing!");

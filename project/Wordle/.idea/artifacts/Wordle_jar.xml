@@ -3,6 +3,7 @@
     <output-path>$USER_HOME$/Downloads</output-path>
     <root id="archive" name="Wordle.jar">
       <element id="module-output" name="Wordle" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/dependencies/json-simple-1.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
