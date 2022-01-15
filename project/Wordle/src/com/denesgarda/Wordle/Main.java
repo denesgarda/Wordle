@@ -61,7 +61,7 @@ public class Main {
                     printBreaker();
                     config:
                     while (true) {
-                        System.out.println("Config:\n    Word length: " + Config.wordLength + "\n    Repeat letters: " + Config.repeatLetters + "\n[ENTER] Start\n[E] Edit");
+                        System.out.println("Config:\n\nWord length: " + Config.wordLength + "\n\nRepeat letters: " + Config.repeatLetters + "\n[ENTER] Start\n[E] Edit");
                         String configInput = in.readLine();
                         if (configInput.equalsIgnoreCase("E")) {
                             property:
