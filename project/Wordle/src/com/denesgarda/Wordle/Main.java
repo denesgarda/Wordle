@@ -3,6 +3,7 @@ package com.denesgarda.Wordle;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.awt.*;
 import java.io.*;
@@ -61,7 +62,7 @@ public class Main {
                     printBreaker();
                     config:
                     while (true) {
-                        System.out.println("Config:\n\nWord length: " + Config.wordLength + "\nRepeat letters: " + Config.repeatLetters + "\n\n[ENTER] Start\n[E] Edit");
+                        System.out.println("Config:\n\nWord length: " + Config.wordLength + "\nRepeat letters: " + Config.repeatLetters + "\n\n[E] Edit config\n[ENTER] Start game");
                         String configInput = in.readLine();
                         if (configInput.equalsIgnoreCase("E")) {
                             property:
@@ -117,6 +118,7 @@ public class Main {
                             printBreaker();
                             game:
                             while (true) {
+                                System.out.print("Loading...");
                                 ArrayList<String> applicable = new ArrayList<>();
                                 for (String word : words) {
                                     if (Config.repeatLetters) {
@@ -132,6 +134,8 @@ public class Main {
                                 int t = 1;
                                 int totalTries = Config.getTries();
                                 String word = applicable.get(new Random().nextInt(applicable.size()));
+                                String definition = getDefinition(word);
+                                System.out.print("\b\b\b\b\b\b\b\b\b\b");
                                 System.out.println("Guess the " + Config.wordLength + " letter word. You have " + totalTries + " tries\n[~] Exit / Forfeit");
                                 guess:
                                 while (true) {
@@ -186,7 +190,9 @@ public class Main {
                                         if (guess.equalsIgnoreCase(word)) {
                                             printBreaker();
                                             printlnColor("YOU WIN!", Color.ANSI_CYAN);
-                                            printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
+                                            printlnColor("Top Definition: " + definition, Color.ANSI_WHITE);
+                                            System.out.println("[ENTER] Continue");
+                                            in.readLine();
                                             printBreaker();
                                             break config;
                                         }
@@ -195,7 +201,9 @@ public class Main {
                                         printBreaker();
                                         printlnColor("YOU LOSE!", Color.ANSI_RED);
                                         System.out.println("The word was: " + word);
-                                        printlnColor("Top Definition: " + getDefinition(word), Color.ANSI_WHITE);
+                                        printlnColor("Top Definition: " + definition, Color.ANSI_WHITE);
+                                        System.out.println("[ENTER] Continue");
+                                        in.readLine();
                                         printBreaker();
                                         break config;
                                     }
@@ -208,7 +216,7 @@ public class Main {
                     System.out.println("How to play Wordle\nYou have to try guessing a word using other words that are the same length with a set amount of tries.");
                     printlnColor("Yellow means the letter is in the word but not in the right spot.", Color.ANSI_YELLOW);
                     printlnColor("Green means the letter is in the word and in the right place.", Color.ANSI_GREEN);
-                    System.out.println("Press [ENTER] to continue");
+                    System.out.println("[ENTER] Continue");
                     in.readLine();
                     printBreaker();
                 } else if (menuInput.equalsIgnoreCase("3")) {
@@ -255,7 +263,7 @@ public class Main {
 
     public static String getDefinition(String word) {
         try {
-            URLConnection connection = new URL("https://api.dictionaryapi.dev/api/v2/entries/en/" + word).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://api.dictionaryapi.dev/api/v2/entries/en/" + word).openConnection();
             connection.setConnectTimeout(5000);
             Scanner scanner = new Scanner(connection.getInputStream());
             scanner.useDelimiter("\\Z");
@@ -264,8 +272,10 @@ public class Main {
             JSONArray meanings = (JSONArray) ((JSONObject) all.get(0)).get("meanings");
             JSONArray definitions = (JSONArray) ((JSONObject) meanings.get(0)).get("definitions");
             return (String) ((JSONObject) definitions.get(0)).get("definition");
+        } catch (ParseException | FileNotFoundException e) {
+            return "No definition available";
         } catch (Exception e) {
-            return "Could not get definition";
+            return "Unable to get definition";
         }
     }
 }
