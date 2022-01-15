@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Main {
-    public static double VERSION = 1.0;
+    public static double VERSION = 1.1;
 
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -62,11 +62,11 @@ public class Main {
         }
         System.out.println("Loading words...");
         int wordAmount = 0;
-        ArrayList<String> words = new ArrayList<>();
+        //ArrayList<String> words = new ArrayList<>();
         ArrayList<String> bank = new ArrayList<>();
         try {
             //https://raw.githubusercontent.com/first20hours/google-10000-english/master/20k.txt
-            Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/common.txt"));
+            /*Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/common.txt"));
             scanner.useDelimiter("\\Z");
             while (scanner.hasNext()) {
                 String word = scanner.nextLine();
@@ -76,9 +76,21 @@ public class Main {
                     wordAmount++;
                 }
             }
-            scanner.close();
+            scanner.close();*/
+            //http://www.mieliestronk.com/corncob_lowercase.txt
+            /*Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/common.txt"));
+            scanner.useDelimiter("\\Z");
+            while (scanner.hasNext()) {
+                String word = scanner.nextLine();
+                if (word.matches("[a-zA-Z]+")) {
+                    words.add(word.toLowerCase());
+                    bank.add(word.toLowerCase());
+                    wordAmount++;
+                }
+            }
+            scanner.close();*/
             //https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
-            Scanner scanner2 = new Scanner(Main.class.getResourceAsStream("/data/all.txt"));
+            Scanner scanner2 = new Scanner(Main.class.getResourceAsStream("/data/en-us.txt"));
             scanner2.useDelimiter("\\Z");
             while (scanner2.hasNext()) {
                 String word = scanner2.nextLine();
@@ -87,7 +99,7 @@ public class Main {
                     wordAmount++;
                 }
             }
-            scanner.close();
+            scanner2.close();
         } catch (Exception e) {
             System.out.println("Failed to load words");
             System.exit(0);
@@ -161,7 +173,7 @@ public class Main {
                             while (true) {
                                 System.out.print("Loading...");
                                 ArrayList<String> applicable = new ArrayList<>();
-                                for (String word : words) {
+                                for (String word : bank) {
                                     if (Config.repeatLetters) {
                                         if (word.length() == Config.wordLength) {
                                             applicable.add(word);
@@ -174,8 +186,12 @@ public class Main {
                                 }
                                 int t = 1;
                                 int totalTries = Config.getTries();
-                                String word = applicable.get(new Random().nextInt(applicable.size()));
-                                String definition = getDefinition(word);
+                                String definition;
+                                String word;
+                                do {
+                                    word = applicable.get(new Random().nextInt(applicable.size()));
+                                    definition = getDefinition(word);
+                                } while (definition.equalsIgnoreCase("No definition available"));
                                 System.out.print("\b\b\b\b\b\b\b\b\b\b");
                                 System.out.println("Guess the " + Config.wordLength + " letter word. You have " + totalTries + " tries\n[~] Exit / Forfeit");
                                 guess:
@@ -199,7 +215,7 @@ public class Main {
                                                 printlnColor("Too long", Color.ANSI_RED);
                                             } else if (guess.length() < word.length()) {
                                                 printlnColor("Too short", Color.ANSI_RED);
-                                            } else if (!(guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess)))) {
+                                            } else if (!(guess.matches("[a-zA-Z]+") && (bank.contains(guess) || bank.contains(guess)))) {
                                                 printlnColor("Not in word bank", Color.ANSI_RED);
                                             } else {
                                                 break input;

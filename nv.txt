@@ -1,1 +1,1 @@
-1.0,true,https://github.com/DenDen747/Wordle/raw/main/builds/Wordle_1.0.jar
+1.1,false,https://github.com/DenDen747/Wordle/raw/main/builds/Wordle_1.1.jar
