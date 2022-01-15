@@ -221,8 +221,12 @@ public class Main {
                     printBreaker();
                 } else if (menuInput.equalsIgnoreCase("3")) {
                     printBreaker();
-                    Desktop.getDesktop().browse(new URI("https://www.github.com/DenDen747/Wordle/"));
-                    System.out.println("Opened Github page in default browser");
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://www.github.com/DenDen747/Wordle/"));
+                        System.out.println("Opened Github page in default browser");
+                    } catch (Exception e) {
+                        System.out.println("Could not open Github in default browser");
+                    }
                     printBreaker();
                 } else if (menuInput.equalsIgnoreCase("~")) {
                     printBreaker();
