@@ -68,7 +68,7 @@ public class Main {
                             property:
                             while (true) {
                                 printBreaker();
-                                System.out.println("Select a property to edit\n[1] Word length\n[2] Repeat letters\n[R] Reset all properties\n[ENTER] Cancel");
+                                System.out.println("Select a property to edit\n\n[1] Word length\n[2] Repeat letters\n[R] Reset all properties\n[ENTER] Cancel");
                                 String propertyInput = in.readLine();
                                 if (propertyInput.equalsIgnoreCase("1")) {
                                     printBreaker();
