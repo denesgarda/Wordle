@@ -87,10 +87,14 @@ public class Main {
                                         guess = "     ";
                                         break input;
                                     }
-                                    if (guess.length() == word.length() && guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess))) {
-                                        break input;
+                                    if (guess.length() > word.length()) {
+                                        printlnColor("Too long", Color.ANSI_RED);
+                                    } else if (guess.length() < word.length()) {
+                                        printlnColor("Too short", Color.ANSI_RED);
+                                    } else if (guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess))) {
+                                        printlnColor("Not in word bank", Color.ANSI_RED);
                                     } else {
-                                        invalid();
+                                        break input;
                                     }
                                 }
                                 String[] colors = new String[word.length()];
@@ -153,7 +157,7 @@ public class Main {
                     printBreaker();
                     break menu;
                 } else {
-                    invalid();
+                    printlnColor("Invalid input", Color.ANSI_RED);
                 }
             }
         } catch (Exception e) {
@@ -169,10 +173,6 @@ public class Main {
     public static void printTry(int t) {
         String s = "Try " + t;
         System.out.println(breaker.substring(0, breaker.length() - s.length()) + s);
-    }
-
-    public static void invalid() {
-        System.out.println(Color.ANSI_RED + "Invalid Input" + Color.ANSI_RESET);
     }
 
     public static void printlnColor(String s, String color) {
