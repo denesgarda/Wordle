@@ -3,10 +3,12 @@ package com.denesgarda.Wordle;
 public class Config {
     public static int wordLength = 5;
     public static boolean repeatLetters = false;
+    public static boolean hardMode = false;
 
     public static void reset() {
         wordLength = 5;
         repeatLetters = false;
+        hardMode = false;
     }
 
     public static int getTries() {

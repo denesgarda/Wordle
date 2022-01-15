@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Main {
-    public static double VERSION = 1.1;
+    public static double VERSION = 1.2;
 
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -62,11 +62,11 @@ public class Main {
         }
         System.out.println("Loading words...");
         int wordAmount = 0;
-        //ArrayList<String> words = new ArrayList<>();
+        ArrayList<String> words = new ArrayList<>();
         ArrayList<String> bank = new ArrayList<>();
         try {
             //https://raw.githubusercontent.com/first20hours/google-10000-english/master/20k.txt
-            /*Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/common.txt"));
+            Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/en-us/common.txt"));
             scanner.useDelimiter("\\Z");
             while (scanner.hasNext()) {
                 String word = scanner.nextLine();
@@ -76,21 +76,9 @@ public class Main {
                     wordAmount++;
                 }
             }
-            scanner.close();*/
-            //http://www.mieliestronk.com/corncob_lowercase.txt
-            /*Scanner scanner = new Scanner(Main.class.getResourceAsStream("/data/common.txt"));
-            scanner.useDelimiter("\\Z");
-            while (scanner.hasNext()) {
-                String word = scanner.nextLine();
-                if (word.matches("[a-zA-Z]+")) {
-                    words.add(word.toLowerCase());
-                    bank.add(word.toLowerCase());
-                    wordAmount++;
-                }
-            }
-            scanner.close();*/
+            scanner.close();
             //https://raw.githubusercontent.com/dwyl/english-words/master/words.txt
-            Scanner scanner2 = new Scanner(Main.class.getResourceAsStream("/data/en-us.txt"));
+            Scanner scanner2 = new Scanner(Main.class.getResourceAsStream("/data/en-us/all.txt"));
             scanner2.useDelimiter("\\Z");
             while (scanner2.hasNext()) {
                 String word = scanner2.nextLine();
@@ -115,13 +103,13 @@ public class Main {
                     printBreaker();
                     config:
                     while (true) {
-                        System.out.println("Config:\n\nWord length: " + Config.wordLength + "\nRepeat letters: " + Config.repeatLetters + "\n\n[E] Edit config\n[ENTER] Start game");
+                        System.out.println("Config:\n\nWord length: " + Config.wordLength + "\nRepeat letters: " + Config.repeatLetters + "\nHard mode: " + Config.hardMode + "\n\n[E] Edit config\n[ENTER] Start game");
                         String configInput = in.readLine();
                         if (configInput.equalsIgnoreCase("E")) {
                             property:
                             while (true) {
                                 printBreaker();
-                                System.out.println("Select a property to edit\n\n[1] Word length\n[2] Repeat letters\n[R] Reset all properties\n[ENTER] Cancel");
+                                System.out.println("Select a property to edit\n\n[1] Word length\n[2] Repeat letters\n[3] Hard mode\n[R] Reset all properties\n[ENTER] Cancel");
                                 String propertyInput = in.readLine();
                                 if (propertyInput.equalsIgnoreCase("1")) {
                                     printBreaker();
@@ -156,6 +144,20 @@ public class Main {
                                             printlnColor("Invalid input", Color.ANSI_RED);
                                         }
                                     }
+                                } else if (propertyInput.equalsIgnoreCase("3")) {
+                                    printBreaker();
+                                    value:
+                                    while (true) {
+                                        System.out.print("Enter new value (true / false)\n" + Config.hardMode + " -> ");
+                                        String valueInput = in.readLine();
+                                        if (valueInput.equalsIgnoreCase("true") || valueInput.equalsIgnoreCase("false")) {
+                                            Config.hardMode = Boolean.parseBoolean(valueInput);
+                                            printBreaker();
+                                            break property;
+                                        } else {
+                                            printlnColor("Invalid input", Color.ANSI_RED);
+                                        }
+                                    }
                                 } else if (propertyInput.equalsIgnoreCase("R")) {
                                     printBreaker();
                                     Config.reset();
@@ -173,14 +175,28 @@ public class Main {
                             while (true) {
                                 System.out.print("Loading...");
                                 ArrayList<String> applicable = new ArrayList<>();
-                                for (String word : bank) {
-                                    if (Config.repeatLetters) {
-                                        if (word.length() == Config.wordLength) {
-                                            applicable.add(word);
+                                if (Config.hardMode) {
+                                    for (String word : bank) {
+                                        if (Config.repeatLetters) {
+                                            if (word.length() == Config.wordLength) {
+                                                applicable.add(word);
+                                            }
+                                        } else {
+                                            if (word.length() == Config.wordLength && !duplicates(word.toCharArray())) {
+                                                applicable.add(word);
+                                            }
                                         }
-                                    } else {
-                                        if (word.length() == Config.wordLength && !duplicates(word.toCharArray())) {
-                                            applicable.add(word);
+                                    }
+                                } else {
+                                    for (String word : words) {
+                                        if (Config.repeatLetters) {
+                                            if (word.length() == Config.wordLength) {
+                                                applicable.add(word);
+                                            }
+                                        } else {
+                                            if (word.length() == Config.wordLength && !duplicates(word.toCharArray())) {
+                                                applicable.add(word);
+                                            }
                                         }
                                     }
                                 }
