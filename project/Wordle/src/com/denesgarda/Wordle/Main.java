@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -91,7 +92,7 @@ public class Main {
                                         printlnColor("Too long", Color.ANSI_RED);
                                     } else if (guess.length() < word.length()) {
                                         printlnColor("Too short", Color.ANSI_RED);
-                                    } else if (guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess))) {
+                                    } else if (!(guess.matches("[a-zA-Z]+") && (words.contains(guess) || bank.contains(guess)))) {
                                         printlnColor("Not in word bank", Color.ANSI_RED);
                                     } else {
                                         break input;
@@ -180,7 +181,7 @@ public class Main {
     }
 
     public static boolean duplicates(final char[] array) {
-        Set<Character> lump = new HashSet<Character>();
+        Set<Character> lump = new HashSet<>();
         for (char i : array) {
             if (lump.contains(i)) return true;
             lump.add(i);
