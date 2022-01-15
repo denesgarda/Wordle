@@ -205,7 +205,7 @@ public class Main {
                     }
                 } else if (menuInput.equalsIgnoreCase("2")) {
                     printBreaker();
-                    System.out.println("How to play Wordle\nYou have to try guessing a five-letter word using other five-letter words. You have six tries.");
+                    System.out.println("How to play Wordle\nYou have to try guessing a word using other words that are the same length with a set amount of tries.");
                     printlnColor("Yellow means the letter is in the word but not in the right spot.", Color.ANSI_YELLOW);
                     printlnColor("Green means the letter is in the word and in the right place.", Color.ANSI_GREEN);
                     System.out.println("Press [ENTER] to continue");
