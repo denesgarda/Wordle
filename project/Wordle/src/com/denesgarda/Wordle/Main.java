@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Main {
-    public static double VERSION = 1.3;
+    public static double VERSION = 1.4;
 
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
