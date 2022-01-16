@@ -212,10 +212,15 @@ public class Main {
                                 int totalTries = Config.getTries();
                                 String definition;
                                 String word;
-                                do {
+                                if (Config.hardMode) {
                                     word = applicable.get(new Random().nextInt(applicable.size()));
                                     definition = getDefinition(word);
-                                } while (definition.equalsIgnoreCase("No definition available"));
+                                } else {
+                                    do {
+                                        word = applicable.get(new Random().nextInt(applicable.size()));
+                                        definition = getDefinition(word);
+                                    } while (definition.equalsIgnoreCase("No definition available"));
+                                }
                                 System.out.print("\b\b\b\b\b\b\b\b\b\b");
                                 System.out.println("Guess the " + Config.wordLength + " letter word. You have " + totalTries + " tries\n[~] Exit / Forfeit");
                                 guess:
