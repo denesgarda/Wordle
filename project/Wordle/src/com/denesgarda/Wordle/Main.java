@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Main {
-    public static double VERSION = 1.2;
+    public static double VERSION = 1.3;
 
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -59,6 +59,14 @@ public class Main {
             }
         } catch (Exception e) {
             System.out.println("Failed to connect, ignoring...");
+            printBreaker();
+            System.out.println("For an improved experience, please connect to the internet.\n[ENTER] Dismiss / continue");
+            try {
+                in.readLine();
+            } catch (Exception e2) {
+                System.out.println("ERROR OCCURRED. PLEASE RELAUNCH!");
+                System.exit(-1);
+            }
         }
         System.out.println("Loading words...");
         int wordAmount = 0;
