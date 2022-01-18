@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Main {
-    public static double VERSION = 1.4;
+    public static double VERSION = 1.5;
 
     public static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -22,6 +22,17 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Checking for update...");
         try {
+            OS os;
+            String osName = System.getProperty("os.name");
+            if (osName.startsWith("Mac")) {
+                os = OS.MACOS;
+            } else if (osName.startsWith("Windows")) {
+                os = OS.WINDOWS;
+            } else {
+                os = OS.UNDETERMINED;
+            }
+
+            //nv
             HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/DenDen747/Wordle/main/nv.txt").openConnection();
             connection.setConnectTimeout(5000);
             Scanner scanner = new Scanner(connection.getInputStream());
@@ -30,29 +41,48 @@ public class Main {
             double version = Double.parseDouble(line.split(",")[0]);
             boolean mandatory = Boolean.parseBoolean(line.split(",")[1]);
             String link = line.split(",")[2];
+
             if (VERSION < version) {
+                //system
+                String OSLink;
+                if (os == OS.MACOS) {
+                    HttpURLConnection connection2 = (HttpURLConnection) new URL("https://raw.githubusercontent.com/DenDen747/Wordle/main/nv/MacOS.txt").openConnection();
+                    connection2.setConnectTimeout(5000);
+                    Scanner scanner2 = new Scanner(connection2.getInputStream());
+                    scanner2.useDelimiter("\\Z");
+                    OSLink = scanner2.nextLine();
+                } else if (os == OS.WINDOWS) {
+                    HttpURLConnection connection2 = (HttpURLConnection) new URL("https://raw.githubusercontent.com/DenDen747/Wordle/main/nv/Windows.txt").openConnection();
+                    connection2.setConnectTimeout(5000);
+                    Scanner scanner2 = new Scanner(connection2.getInputStream());
+                    scanner2.useDelimiter("\\Z");
+                    OSLink = scanner2.nextLine();
+                } else {
+                    OSLink = link;
+                }
+
                 if (mandatory) {
-                    System.out.println("You are using an outdated version! This is a mandatory update.\n\n[ENTER] Download new version\n[~] Exit");
+                    System.out.println("You are using an outdated version! This is a mandatory update.\nYour version: " + VERSION + "\nNewest version: " + version + "\n\n[ENTER] Download new version\n[~] Exit");
                     String choice = in.readLine();
                     if (!choice.equalsIgnoreCase("~")) {
                         try {
-                            Desktop.getDesktop().browse(new URI(link));
+                            Desktop.getDesktop().browse(new URI(OSLink));
                             System.exit(0);
                         } catch (Exception e) {
-                            System.out.println("Failed to open link in default browser. Please go to the following link:\n" + link);
+                            System.out.println("Failed to open link in default browser. Please go to the following link:\n" + OSLink);
                         }
                     } else {
                         System.exit(0);
                     }
                 } else {
-                    System.out.println("You are using an outdated version!\n\n[ENTER] Download new version\n[~] Continue anyway (not recommended)");
+                    System.out.println("You are using an outdated version!\nYour version: " + VERSION + "\nNewest version: " + version + "\n\n[ENTER] Download new version\n[~] Continue anyway (not recommended)");
                     String choice = in.readLine();
                     if (!choice.equalsIgnoreCase("~")) {
                         try {
-                            Desktop.getDesktop().browse(new URI(link));
+                            Desktop.getDesktop().browse(new URI(OSLink));
                             System.exit(0);
                         } catch (Exception e) {
-                            System.out.println("Failed to open link in default browser. Please go to the following link:\n" + link);
+                            System.out.println("Failed to open link in default browser. Please go to the following link:\n" + OSLink);
                         }
                     }
                 }
@@ -105,7 +135,7 @@ public class Main {
         try {
             menu:
             while (true) {
-                System.out.println("Wordle Main Menu\n[1] Play\n[2] How to play\n[3] Github\n[~] Quit");
+                System.out.println("Wordle v" + VERSION + " Main Menu\n[1] Play\n[2] How to play\n[3] Github\n[~] Quit");
                 String menuInput = in.readLine();
                 if (menuInput.equalsIgnoreCase("1")) {
                     printBreaker();
